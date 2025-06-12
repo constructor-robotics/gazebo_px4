@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>bluerov2common</name>
-  <description>basic utility</description>
+  <name>gazebo_px4</name>
+  <description>gazebo stuff</description>
 
   <version>0.0.11</version>
   <license>BSD</license>

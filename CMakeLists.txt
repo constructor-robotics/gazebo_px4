@@ -27,21 +27,20 @@ find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(gz-transport REQUIRED)
-
+find_package(gz-transport13 REQUIRED)
+find_package(gz-msgs10 REQUIRED)
 #add_executable(controllerpx4bluerov2 src/px4_controller/mode.hpp src/px4_controller/main.cpp src/px4_controller/controllerOfBluerov2.cpp src/px4_controller/controllerOfBluerov2.h)
 #ament_target_dependencies(controllerpx4bluerov2 px4_ros2_cpp rclcpp std_msgs sensor_msgs bluerov2commonmsgs tf2 Eigen3 px4_msgs visualization_msgs)
 
 add_executable(my_custom_bridge src/dvl_bridge_gazebo.cpp)
+ament_target_dependencies(my_custom_bridge rclcpp gz-transport13 gz-msgs10 geometry_msgs)
 
-target_link_libraries(my_custom_bridge
-        rclcpp
-        gz-transport::gz-transport
-)
 
-ament_target_export_include_directories(
-        INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
-)
+#target_link_libraries(my_custom_bridge
+#
+#        gz-transport13::gz-transport13
+#)
+
 
 install(TARGETS
         my_custom_bridge

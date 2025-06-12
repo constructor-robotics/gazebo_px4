@@ -1,7 +1,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <gz/transport/Node.hh>
-#include <gz/msgs/Pose.hh>
-#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <gz/msgs/dvl_velocity_tracking.pb.h>
+
+// #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 
 class MyBridge : public rclcpp::Node {
 public:
@@ -10,39 +12,34 @@ public:
         gz_node_ = std::make_unique<gz::transport::Node>();
 
         // Start the transport thread to process messages
-        transport_thread_ = std::thread([this]() {
-          gz_node_->Run();
-        });
-        transport_thread_.detach();
+        // transport_thread_ = std::thread([this]() {
+        //   gz_node_->();
+        // });
+        // transport_thread_.detach();
 
         // Subscribe to a Gazebo topic (e.g., /model/robot_name/pose)
-        gz_node_->Subscribe("/model/robot_name/pose", &MyBridge::gazeboCallback, this);
+        gz_node_->Subscribe("/dvl/velocity", &MyBridge::gazeboCallback, this);
 
         // Create a ROS publisher
-        ros_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("my_pose_topic", 10);
+        ros_pub_ = this->create_publisher<geometry_msgs::msg::TwistStamped>("/dvl/velocity", 10);
     }
 
 private:
-    void gazeboCallback(const gz::msgs::Pose& msg) {
-        auto ros_msg = std::make_shared<geometry_msgs::msg::PoseStamped>();
+    void gazeboCallback(const gz::msgs::DVLVelocityTracking& msg) {
+        auto ros_msg = std::make_shared<geometry_msgs::msg::TwistStamped>();
         ros_msg->header.stamp = this->get_clock()->now();
 
         // Convert Gazebo Pose to ROS PoseStamped
-        ros_msg->pose.position.x = msg.position().x();
-        ros_msg->pose.position.y = msg.position().y();
-        ros_msg->pose.position.z = msg.position().z();
-
-        ros_msg->pose.orientation.w = msg.orientation().w();
-        ros_msg->pose.orientation.x = msg.orientation().x();
-        ros_msg->pose.orientation.y = msg.orientation().y();
-        ros_msg->pose.orientation.z = msg.orientation().z();
+        ros_msg->twist.linear.x = msg.velocity().mean().x();
+        ros_msg->twist.linear.y = msg.velocity().mean().y();
+        ros_msg->twist.linear.z = msg.velocity().mean().z();
 
         // Publish the ROS message
         ros_pub_->publish(*ros_msg);
     }
 
     std::unique_ptr<gz::transport::Node> gz_node_;
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr ros_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr ros_pub_;
     std::thread transport_thread_;
 };
 
