@@ -1,6 +1,8 @@
 # gazebo_px4
 ROS2 package for the usage of the gazebo simulation with the PX4 firmware
 
+Basically only implements the DVL gazebo bridge. Using the classical gazebo DVL sensor.
+
 
 
 
@@ -8,7 +10,7 @@ ROS2 package for the usage of the gazebo simulation with the PX4 firmware
 
 
 # adding DVL to model:
-To Model:
+add this DVL sensor to the BlueAUV Model:
          ```
          <sensor
               name="doppler_velocity_log"
@@ -61,10 +63,10 @@ To Model:
           </sensor>
           ```
 
-to World:
+to World file:
 `<plugin entity_name="*" entity_type="world" filename="gz-sim-dvl-system" name="gz::sim::systems::DopplerVelocityLogSystem"/>`
 to server.config in gz_bridge
-and comment out
+and comment out to make the DVL work in PX4.
 `<plugin entity_name="*" entity_type="world" filename="libOpticalFlowSystem.so" name="custom::OpticalFlowSystem"/>`
 
 
